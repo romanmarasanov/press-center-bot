@@ -40,7 +40,7 @@ public class PressCenterBot extends TelegramLongPollingBot {
     private void setPredictorKeyboard() {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText("Назад к меню");
-        button.setCallbackData("ССервО");
+        button.setCallbackData("Главное меню");
         predictorInlineKeyboard.setKeyboard(List.of(List.of(button)));
     }
 
@@ -130,8 +130,8 @@ public class PressCenterBot extends TelegramLongPollingBot {
     }
 
     private void processNewQuery(String user, String messageText) {
-
         switch (messageText) {
+            case "Главное меню" -> sendStartingMessage(user);
             case "Мероприятия" -> sendEvents(user);
             case "Отряды" -> sendSquads(user);
             case "Предсказатель" -> sendPredictor(user);
@@ -150,7 +150,7 @@ public class PressCenterBot extends TelegramLongPollingBot {
 
     private void sendPredictor(String userId) {
         SendMessage eventsMessage = new SendMessage();
-        eventsMessage.setReplyMarkup(squadsInlineKeyboard);
+        eventsMessage.setReplyMarkup(predictorInlineKeyboard);
         eventsMessage.setText("""
                 Один замечательный человек в своё время создал мини-бота, который проверяет, какой из отрядов Политеха тебе больше подходит. Если интересно, можешь пройти его опрос, это займет всего пару минут! 
                 
@@ -192,7 +192,7 @@ public class PressCenterBot extends TelegramLongPollingBot {
     private void processNewMessage(User user, Message message) {
         String messageText = message.getText();
         if (messageText.equals("/start") || messageText.toLowerCase(Locale.ROOT).equals("к главному меню!")) {
-            sendStartingMessage(user);
+            sendStartingMessage(String.valueOf(user.getId()));
             return;
         }
         SendMessage misunderstandMessage = new SendMessage();
@@ -203,9 +203,9 @@ public class PressCenterBot extends TelegramLongPollingBot {
         sendMessage(misunderstandMessage);
     }
 
-    private void sendStartingMessage(User to) {
+    private void sendStartingMessage(String userId) {
         SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(to.getId()));
+        message.setChatId(userId);
         message.setText("""
                 Это моё главное меню. Вот ссылки которые тебе могут пригодиться:
 
